@@ -1,264 +1,1110 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0b1220">
-<title>E2 Group | Store Transfers Analytics</title>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#eef3f9;--surface:#fff;--surface-2:#f6f9fd;--text:#172338;--muted:#718096;--line:#e1e8f0;--primary:#1479d4;--primary-2:#0b5eaa;--primary-soft:#e8f3ff;--green:#0d9b72;--green-soft:#e6f8f1;--amber:#c78313;--amber-soft:#fff5df;--red:#d44b55;--shadow:0 12px 34px rgba(22,45,76,.07);--header1:#0b1729;--header2:#123e70}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh;transition:background .2s,color .2s}
-body.dark{--bg:#08111f;--surface:#111e30;--surface-2:#17263a;--text:#e8f0fa;--muted:#9aabc0;--line:#293a50;--primary:#43a5ff;--primary-2:#1886e5;--primary-soft:#173653;--green:#39c99a;--green-soft:#123c34;--amber:#f3bd58;--amber-soft:#44351c;--red:#ff7b83;--shadow:0 14px 36px rgba(0,0,0,.22);--header1:#07101d;--header2:#102e50}
-button,input,select{font:inherit}button{cursor:pointer}.app{max-width:1450px;margin:auto;padding:24px 26px 18px}
-.topbar{background:linear-gradient(120deg,var(--header1),var(--header2));color:#fff;border-radius:22px;padding:25px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:0 16px 38px rgba(8,30,57,.2);position:relative;overflow:hidden}
-.topbar:after{content:"";position:absolute;width:280px;height:280px;border:1px solid #ffffff18;border-radius:50%;left:16%;top:-190px;box-shadow:0 0 0 35px #ffffff08,0 0 0 70px #ffffff05}
-.brand,.header-actions{position:relative;z-index:1}.brandline{display:flex;align-items:center;gap:12px}.brandmark{width:48px;height:48px;border-radius:15px;background:linear-gradient(145deg,#39a5ff,#1262b2);display:grid;place-items:center;font-size:21px;font-weight:900;box-shadow:0 7px 18px #0003}.brandname{font-size:19px;font-weight:900;letter-spacing:1.5px}.brand-sub{font-size:10px;color:#b7cce2;letter-spacing:2px;margin-top:-3px}.topbar h1{font-size:clamp(19px,2.3vw,27px);margin:17px 0 3px;font-weight:800}.topbar p{margin:0;color:#c2d3e5;font-size:13px}.header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.icon-btn,.outline-btn{border:1px solid #ffffff35;color:#fff;background:#ffffff12;border-radius:11px;padding:9px 13px;font-weight:700;font-size:12px;display:flex;align-items:center;gap:7px}.icon-btn:hover,.outline-btn:hover{background:#ffffff25}
-.section{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:21px;margin-top:19px;box-shadow:var(--shadow)}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.section-title h2{font-size:16px;margin:0;font-weight:800}.section-title p{font-size:11px;color:var(--muted);margin:3px 0 0}
-.upload-zone{border:2px dashed #78b8ee;border-radius:15px;background:var(--primary-soft);padding:27px 16px;text-align:center;cursor:pointer;transition:.2s}.upload-zone:hover,.upload-zone.dragover{border-color:var(--primary);transform:translateY(-1px);filter:brightness(.98)}.upload-icon{width:52px;height:52px;border-radius:16px;background:var(--surface);color:var(--primary);display:grid;place-items:center;font-size:25px;margin:0 auto 9px;box-shadow:0 4px 14px #1678c51a}.upload-title{font-size:15px;font-weight:800}.upload-sub{font-size:11px;color:var(--muted);margin-top:4px}.file-status{font-size:12px;color:var(--green);font-weight:700;margin-top:9px;min-height:20px}
-.mapping{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:10px;margin-top:17px}.map-item label{display:block;font-size:11px;color:var(--muted);font-weight:800;margin:0 0 5px}.map-item select,.control{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--surface);color:var(--text);outline:none;font-size:12px}.map-item select:focus,.control:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:19px}.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:17px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden}.stat:before{content:"";position:absolute;right:0;top:0;bottom:0;width:4px;background:var(--primary)}.stat.green:before{background:var(--green)}.stat.amber:before{background:var(--amber)}.stat.violet:before{background:#8b78db}.stat-label{font-size:11px;color:var(--muted);font-weight:700}.stat-value{font-size:clamp(21px,2.2vw,28px);font-weight:900;margin-top:5px;direction:ltr;text-align:right;overflow-wrap:anywhere}.stat-note{font-size:10px;color:var(--muted);margin-top:1px}
-.results{margin-top:19px;display:none}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:13px;flex-wrap:wrap;margin-bottom:14px}.search-wrap{position:relative;flex:1;min-width:230px;max-width:440px}.search-wrap .search-icon{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px;pointer-events:none}.search-wrap input{padding-right:39px;padding-left:37px;height:43px;font-size:12px}.clear-search{position:absolute;left:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted);font-size:18px;display:none}.toolbar-select{min-width:190px;width:auto;height:43px}.filter-check{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px;font-weight:700;background:var(--surface-2);border:1px solid var(--line);padding:10px 12px;border-radius:10px;white-space:nowrap}.filter-check input{accent-color:var(--primary);width:15px;height:15px}.btn{border:0;border-radius:11px;padding:11px 16px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s}.btn:hover{transform:translateY(-1px);filter:brightness(1.05)}.btn-primary{background:linear-gradient(120deg,#1686e5,#0864b8);color:white;box-shadow:0 6px 15px #0875cf30}.btn-secondary{background:var(--surface-2);border:1px solid var(--line);color:var(--text)}.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.result-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px;margin:0 1px 10px}.result-meta strong{color:var(--primary)}.table-wrap{border:1px solid var(--line);border-radius:13px;overflow:auto;max-height:590px;background:var(--surface)}table{border-collapse:separate;border-spacing:0;width:100%;min-width:850px;text-align:right}thead th{position:sticky;top:0;z-index:2;background:#14263d;color:#fff;padding:13px 12px;font-size:11px;white-space:nowrap;font-weight:800}thead th button{background:none;border:0;color:inherit;font:inherit;padding:0;cursor:pointer}thead th button:hover{color:#8bcaff}tbody td{padding:11px 12px;border-bottom:1px solid var(--line);font-size:11px;white-space:nowrap}tbody tr:nth-child(even){background:var(--surface-2)}tbody tr:hover{background:var(--primary-soft)}tbody tr:last-child td{border-bottom:0}.code-pill{display:inline-block;background:var(--primary-soft);color:var(--primary);padding:3px 8px;border-radius:6px;font-family:monospace;font-weight:800;direction:ltr}.unit-pill{display:inline-block;background:var(--amber-soft);color:var(--amber);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800}.avg-pill{display:inline-block;background:var(--green-soft);color:var(--green);padding:4px 9px;border-radius:7px;font-weight:900;direction:ltr}.num{direction:ltr;text-align:right;font-variant-numeric:tabular-nums}.empty-state{text-align:center!important;padding:35px!important;color:var(--muted)!important;font-size:13px!important}
-.footer{text-align:center;color:var(--muted);font-size:10px;padding:23px 8px 5px}.footer b{color:var(--primary)}
-.toast{position:fixed;bottom:20px;left:20px;z-index:10;background:#12263d;color:white;padding:12px 17px;border-radius:12px;box-shadow:0 8px 25px #0003;font-size:12px;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;max-width:calc(100% - 40px)}.toast.show{opacity:1;transform:translateY(0)}.loading{display:none;align-items:center;gap:9px;color:var(--primary);font-size:12px;font-weight:700;margin-top:10px}.spinner{width:16px;height:16px;border:2px solid var(--primary-soft);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:1050px){.mapping{grid-template-columns:repeat(3,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:650px){.app{padding:12px 10px}.topbar{padding:19px 16px;border-radius:17px;align-items:flex-start;flex-direction:column}.topbar h1{margin-top:13px}.header-actions{width:100%}.header-actions button{flex:1;justify-content:center}.section{padding:15px;margin-top:13px;border-radius:15px}.upload-zone{padding:22px 10px}.mapping{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stats{gap:9px;margin-top:13px}.stat{padding:13px 12px;border-radius:13px}.stat-value{font-size:21px}.toolbar{align-items:stretch}.search-wrap{max-width:none;flex-basis:100%}.toolbar-select{width:100%;min-width:0}.filter-check{justify-content:center}.toolbar .btn{width:100%}.result-meta{align-items:flex-start;flex-direction:column}.table-wrap{max-height:65vh}thead th{padding:11px 9px}tbody td{padding:10px 9px}}
-@media(max-width:360px){.mapping{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.brandname{font-size:17px}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>أداة تجميع المنصرف وتجميع الأرصدة — E2 Group</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --primary: #1b365d;
+      --primary-light: #2c5282;
+      --beach: #234e52;
+      --vacation: #4a3b6b;
+      --accent-bg: #eef2f7;
+      --border: #d9e1ec;
+      --text: #0f172a;
+      --muted: #526071;
+      --success-bg: #dcfce7;
+      --success-text: #166534;
+      --info-bg: #e0f2fe;
+      --info-text: #075985;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      padding: 20px;
+    }
+
+    .container { max-width: 1420px; margin: 0 auto; }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      padding: 22px 26px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(27, 54, 93, 0.14);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .header p { font-size: 13px; color: #e2e8f0; }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .tabs-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid var(--border);
+      padding: 11px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 3px 10px rgba(27, 54, 93, 0.18);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      margin-bottom: 18px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .dropzone {
+      border: 2px dashed #9fb3c8;
+      border-radius: 10px;
+      padding: 18px 14px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary-light);
+      background: var(--accent-bg);
+    }
+
+    .dropzone input[type="file"] { display: none; }
+    .dropzone .main-txt { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .dropzone .sub-txt { font-size: 12px; color: var(--muted); }
+
+    .file-status {
+      margin-top: 10px;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    .file-status.loaded {
+      background: var(--success-bg);
+      color: var(--success-text);
+      font-weight: 600;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .field select, .field input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    button.action-btn {
+      border: none;
+      border-radius: 9px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+
+    button.action-btn:active { transform: scale(0.98); }
+    button.action-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-success { background: #15803d; color: #fff; }
+
+    .info-box {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: var(--info-bg);
+      color: var(--info-text);
+      font-size: 12px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .kpi .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .kpi .val { font-size: 18px; font-weight: 700; color: var(--primary); }
+    .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .search-box {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      min-width: 280px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      max-height: 540px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 10px;
+      text-align: center;
+      font-weight: 700;
+      border-bottom: 2px solid #0f2342;
+      white-space: nowrap;
+      z-index: 2;
+    }
+
+    thead th.th-beach { background: var(--beach); }
+    thead th.th-vac { background: var(--vacation); }
+
+    tbody td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eef2f6;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) { background: #f8fafc; }
+
+    tbody tr.total-row {
+      background: #e2e8f0 !important;
+      font-weight: 700;
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+    }
+
+    .num {
+      text-align: left;
+      direction: ltr;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .center { text-align: center; }
+  </style>
 </head>
 <body>
-<div class="app">
-<header class="topbar">
-  <div class="brand">
-    <div class="brandline"><div class="brandmark">E2</div><div><div class="brandname">E2 GROUP</div><div class="brand-sub">COST CONTROL SYSTEM</div></div></div>
-    <h1>تحليل تحويلات ومنصرف المخازن</h1>
-    <p>تجميع ذكي للأصناف • تحليل التكلفة • متوسط السعر الموزون</p>
-  </div>
-  <div class="header-actions">
-    <button class="icon-btn" id="themeToggle" type="button">☀️ الوضع الفاتح</button>
-    <button class="outline-btn" id="resetBtn" type="button">↻ إعادة ضبط</button>
-  </div>
-</header>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>نظام تجميع المنصرف وتجميع الأرصدة</h1>
+        <p>تبويبان منفصلان: تجميع المنصرف لكل فندق على حدة برقم الصنف وعدد الحركات، وتجميع أرصدة القريتين معاً</p>
+      </div>
+      <div class="badge">E2 Group • م/إيهاب إينال</div>
+    </div>
 
-<section class="section">
-  <div class="section-title"><div><h2>📁 استيراد بيانات التقرير</h2><p>ارفع تقرير Store Transfers بصيغة Excel أو CSV</p></div><span class="code-pill">IMPORT DATA</span></div>
-  <div class="upload-zone" id="dropZone" role="button" tabindex="0">
-    <div class="upload-icon">⇧</div>
-    <div class="upload-title">اضغط لاختيار الملف أو اسحبه وأفلته هنا</div>
-    <div class="upload-sub">يدعم XLSX و XLS و CSV — تتم قراءة أول ورقة في الملف</div>
-    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
-    <div class="file-status" id="fileStatus">لم يتم اختيار ملف بعد</div>
-  </div>
-  <div class="loading" id="loading"><span class="spinner"></span><span id="loadingText">جارٍ معالجة البيانات...</span></div>
-  <div class="mapping">
-    <div class="map-item"><label for="colCode">كود الصنف (Item No)</label><select id="colCode"><option value="0" selected>العمود A</option><option value="1">العمود B</option><option value="2">العمود C</option><option value="3">العمود D</option><option value="4">العمود E</option><option value="5">العمود F</option><option value="6">العمود G</option><option value="7">العمود H</option><option value="8">العمود I</option></select></div>
-    <div class="map-item"><label for="colName">اسم الصنف (Description)</label><select id="colName"><option value="0">العمود A</option><option value="1" selected>العمود B</option><option value="2">العمود C</option><option value="3">العمود D</option><option value="4">العمود E</option><option value="5">العمود F</option><option value="6">العمود G</option><option value="7">العمود H</option><option value="8">العمود I</option></select></div>
-    <div class="map-item"><label for="colUnit">الوحدة (Unit)</label><select id="colUnit"><option value="0">العمود A</option><option value="1">العمود B</option><option value="2" selected>العمود C</option><option value="3">العمود D</option><option value="4">العمود E</option><option value="5">العمود F</option><option value="6">العمود G</option><option value="7">العمود H</option><option value="8">العمود I</option></select></div>
-    <div class="map-item"><label for="colToStore">المخزن المستلم (To Store)</label><select id="colToStore"><option value="-1">بدون فلتر مخزن</option><option value="3">العمود D</option><option value="4" selected>العمود E</option><option value="5">العمود F</option><option value="6">العمود G</option><option value="7">العمود H</option><option value="8">العمود I</option></select></div>
-    <div class="map-item"><label for="colQty">الكمية (Qty)</label><select id="colQty"><option value="4">العمود E</option><option value="5">العمود F</option><option value="6" selected>العمود G</option><option value="7">العمود H</option><option value="8">العمود I</option></select></div>
-    <div class="map-item"><label for="colTotal">الإجمالي (Value)</label><select id="colTotal"><option value="5">العمود F</option><option value="6">العمود G</option><option value="7" selected>العمود H</option><option value="8">العمود I</option><option value="9">العمود J</option></select></div>
-  </div>
-</section>
+    <div class="tabs-bar">
+      <button type="button" class="tab-btn active" data-tab="tabUsage">1. تجميع المنصرف (لفندق واحد على حدة)</button>
+      <button type="button" class="tab-btn" data-tab="tabStock">2. تجميع الرصيد (بيتش + فاكيشن معاً)</button>
+    </div>
 
-<div class="stats" id="statsSection" style="display:none">
-  <div class="stat"><div class="stat-label">عدد الحركات المقروءة</div><div class="stat-value" id="rawRowsCount">0</div><div class="stat-note">Valid transactions</div></div>
-  <div class="stat violet"><div class="stat-label">الأصناف الفريدة</div><div class="stat-value" id="uniqueItemsCount">0</div><div class="stat-note">Unique item codes</div></div>
-  <div class="stat amber"><div class="stat-label">إجمالي الكميات</div><div class="stat-value" id="totalQtySum">0</div><div class="stat-note">Total quantity</div></div>
-  <div class="stat green"><div class="stat-label">إجمالي التكلفة</div><div class="stat-value" id="grandTotalCost">0.00</div><div class="stat-note">Total value</div></div>
-</div>
+    <!-- ========================================================= -->
+    <!-- TAB 1: DISBURSEMENT / USAGE CONSOLIDATION (SINGLE HOTEL)   -->
+    <!-- ========================================================= -->
+    <div id="tabUsage" class="tab-panel active">
+      <div class="card">
+        <div class="card-title">
+          <span>تحميل ملف المنصرف والتحويلات (Store Usage / Transfer) لفندق واحد</span>
+        </div>
+        <label class="dropzone" id="dropUsage">
+          <input type="file" id="fileUsage" accept=".xls,.xlsx,.csv" />
+          <div class="main-txt">اسحب ملف المنصرف هنا أو اضغط للاختيار</div>
+          <div class="sub-txt">يدعم ملفات Store Usage/Transfer (.xls, .xlsx) — يقرأ اسم الفندق والفترة تلقائياً</div>
+        </label>
+        <div class="file-status" id="statusUsage">لم يتم تحميل ملف منصرف بعد</div>
 
-<section class="section results" id="resultsCard">
-  <div class="section-title"><div><h2>📊 نتائج تحليل الأصناف</h2><p>ابحث، صفِّ، ورتّب البيانات المستخرجة مباشرة</p></div><span class="code-pill">LIVE ANALYSIS</span></div>
-  <div class="toolbar">
-    <div class="search-wrap"><span class="search-icon">⌕</span><input class="control" type="search" id="searchInput" placeholder="ابحث بكود الصنف أو اسمه..." autocomplete="off"><button class="clear-search" id="clearSearch" title="مسح البحث" type="button">×</button></div>
-    <select class="control toolbar-select" id="storeFilter"><option value="ALL">كل المخازن المستلمة</option></select>
-    <label class="filter-check"><input type="checkbox" id="hideZeroQty"> إخفاء الأصناف الصفرية</label>
-    <button class="btn btn-primary" id="exportBtn" type="button">⬇ تصدير Excel</button>
+        <div class="options-grid" style="margin-top:14px;">
+          <div class="field">
+            <label for="usageHotel">اسم الفندق / الموقع</label>
+            <input type="text" id="usageHotel" value="Dreams Beach Resort" />
+          </div>
+          <div class="field">
+            <label for="usagePeriod">الفترة</label>
+            <input type="text" id="usagePeriod" value="2026-11-01 إلى 2026-11-24" />
+          </div>
+          <div class="field">
+            <label for="usageStatus">حالة الحركات المحتسبة (Status)</label>
+            <select id="usageStatus">
+              <option value="ALL" selected>جميع الحركات بالملف (مطابق لـ Total الأصلي)</option>
+              <option value="APPROVED_ONLY">المعتمدة فقط (Approved)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="usageType">نوع الحركة (Type)</label>
+            <select id="usageType">
+              <option value="ALL" selected>الكل (Usage + Transfer)</option>
+              <option value="Usage">المنصرف المباشر (Usage)</option>
+              <option value="Transfer">التحويلات (Transfer)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="action-btn btn-primary" id="btnProcessUsage" disabled>تجميع المنصرف برقم الصنف</button>
+          <button type="button" class="action-btn btn-success" id="btnExportUsage" disabled>تصدير شيت المنصرف (.xlsx)</button>
+        </div>
+
+        <div class="info-box">
+          يجمع كل حركات الصنف الواحد على <strong>رقم الصنف</strong> من أعمدة التقرير (عمود G: <code>Approved Qty</code>، عمود I: <code>Total</code>)، ويحسب <strong>عدد حركات الصنف</strong> وتفاصيل حركات (Usage / Transfer)، ويتجاهل صفوف <code>Total</code> الفرعية لمنع الازدواجية.
+        </div>
+      </div>
+
+      <div class="kpis" id="usageKpis" style="display:none;">
+        <div class="kpi">
+          <div class="label">عدد الأصناف المجمعة</div>
+          <div class="val" id="uKpiItems">0</div>
+          <div class="sub" id="uKpiHotel">الفندق: -</div>
+        </div>
+        <div class="kpi">
+          <div class="label">إجمالي عدد حركات الأصناف</div>
+          <div class="val" id="uKpiTx">0</div>
+          <div class="sub" id="uKpiTxBreakdown">Usage: 0 | Transfer: 0</div>
+        </div>
+        <div class="kpi">
+          <div class="label">إجمالي الكمية المنصرفة</div>
+          <div class="val" id="uKpiQty">0.000</div>
+          <div class="sub">بالوحدة المعتمدة</div>
+        </div>
+        <div class="kpi">
+          <div class="label">إجمالي قيمة المنصرف</div>
+          <div class="val" id="uKpiVal">0.00</div>
+          <div class="sub">مطابق للتقرير بالقرش</div>
+        </div>
+      </div>
+
+      <div class="card" id="usageResultCard" style="display:none;">
+        <div class="toolbar">
+          <div class="card-title" style="margin:0;">جدول المنصرف المجمع برقم الصنف</div>
+          <input type="text" class="search-box" id="usageSearch" placeholder="بحث برقم الصنف أو الاسم أو المجموعة..." />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>م</th>
+                <th>رقم الصنف</th>
+                <th>اسم الصنف</th>
+                <th>المجموعة</th>
+                <th>عدد الحركات</th>
+                <th>كمية Usage</th>
+                <th>كمية Transfer</th>
+                <th>إجمالي الكمية</th>
+                <th>إجمالي القيمة</th>
+              </tr>
+            </thead>
+            <tbody id="usageBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 2: STOCK CONSOLIDATION (BEACH + VACATION TOGETHER)    -->
+    <!-- ========================================================= -->
+    <div id="tabStock" class="tab-panel">
+      <div class="grid-2">
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title">
+            <span>رصيد دريمز بيتش (Beach)</span>
+            <span class="badge" style="background:#e6fffa;color:#234e52;border-color:#81e6d9;">Beach</span>
+          </div>
+          <label class="dropzone" id="dropStockBeach">
+            <input type="file" id="fileStockBeach" accept=".xls,.xlsx,.csv" />
+            <div class="main-txt">اسحب ملف رصيد بيتش هنا أو اضغط للاختيار</div>
+            <div class="sub-txt">يدعم ملفات الأرصدة (.xls, .xlsx)</div>
+          </label>
+          <div class="file-status" id="statusStockBeach">لم يتم تحميل ملف رصيد بيتش بعد</div>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title">
+            <span>رصيد دريمز فاكيشن (Vacation)</span>
+            <span class="badge" style="background:#f3e8ff;color:#4a3b6b;border-color:#d8b4fe;">Vacation</span>
+          </div>
+          <label class="dropzone" id="dropStockVac">
+            <input type="file" id="fileStockVac" accept=".xls,.xlsx,.csv" />
+            <div class="main-txt">اسحب ملف رصيد فاكيشن هنا أو اضغط للاختيار</div>
+            <div class="sub-txt">يدعم ملفات الأرصدة (.xls, .xlsx)</div>
+          </label>
+          <div class="file-status" id="statusStockVac">لم يتم تحميل ملف رصيد فاكيشن بعد</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <div class="card-title">
+          <span>إعدادات أعمدة ملفات الرصيد (موافقة افتراضياً لشيتات الأرصدة)</span>
+        </div>
+        <div class="options-grid">
+          <div class="field">
+            <label for="sColCode">عمود رقم الصنف</label>
+            <select id="sColCode"></select>
+          </div>
+          <div class="field">
+            <label for="sColName">عمود اسم الصنف</label>
+            <select id="sColName"></select>
+          </div>
+          <div class="field">
+            <label for="sColUnit">عمود الوحدة</label>
+            <select id="sColUnit"></select>
+          </div>
+          <div class="field">
+            <label for="sColGroup">عمود المجموعة</label>
+            <select id="sColGroup"></select>
+          </div>
+          <div class="field">
+            <label for="sColQty">عمود الكمية</label>
+            <select id="sColQty"></select>
+          </div>
+          <div class="field">
+            <label for="sColVal">عمود القيمة الإجمالية</label>
+            <select id="sColVal"></select>
+          </div>
+          <div class="field">
+            <label for="stockDate">تاريخ الإغلاق / الجرد</label>
+            <input type="text" id="stockDate" value="21 نوفمبر 2026" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="action-btn btn-primary" id="btnProcessStock" disabled>دمج أرصدة القريتين</button>
+          <button type="button" class="action-btn btn-success" id="btnExportStock" disabled>تصدير شيت الأرصدة المجمع (.xlsx)</button>
+        </div>
+
+        <div class="info-box">
+          يخرج شيت الأرصدة المجمع بنفس ترتيب أعمدة شيت الأرصدة المجمع: <strong>(م، رقم الصنف، اسم الصنف، الوحدة، المجموعة، كمية بيتش، قيمة بيتش، كمية فاكيشن، قيمة فاكيشن، إجمالي الكمية، إجمالي القيمة)</strong>.
+        </div>
+      </div>
+
+      <div class="kpis" id="stockKpis" style="display:none;">
+        <div class="kpi">
+          <div class="label">إجمالي الأصناف المجمعة</div>
+          <div class="val" id="sKpiItems">0</div>
+          <div class="sub" id="sKpiItemsSub">بيتش: 0 | فاكيشن: 0</div>
+        </div>
+        <div class="kpi">
+          <div class="label">إجمالي قيمة رصيد بيتش</div>
+          <div class="val" id="sKpiBeachVal">0.00</div>
+          <div class="sub" id="sKpiBeachQty">الكمية: 0.000</div>
+        </div>
+        <div class="kpi">
+          <div class="label">إجمالي قيمة رصيد فاكيشن</div>
+          <div class="val" id="sKpiVacVal">0.00</div>
+          <div class="sub" id="sKpiVacQty">الكمية: 0.000</div>
+        </div>
+        <div class="kpi">
+          <div class="label">الإجمالي المجمع للقريتين</div>
+          <div class="val" id="sKpiTotalVal">0.00</div>
+          <div class="sub" id="sKpiTotalQty">إجمالي الكمية: 0.000</div>
+        </div>
+      </div>
+
+      <div class="card" id="stockResultCard" style="display:none;">
+        <div class="toolbar">
+          <div class="card-title" style="margin:0;">جدول الأرصدة المجمع (بيتش + فاكيشن)</div>
+          <input type="text" class="search-box" id="stockSearch" placeholder="بحث برقم الصنف أو الاسم أو المجموعة..." />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>م</th>
+                <th>رقم الصنف</th>
+                <th>اسم الصنف</th>
+                <th>الوحدة</th>
+                <th>المجموعة</th>
+                <th class="th-beach">كمية بيتش</th>
+                <th class="th-beach">قيمة بيتش</th>
+                <th class="th-vac">كمية فاكيشن</th>
+                <th class="th-vac">قيمة فاكيشن</th>
+                <th>إجمالي الكمية</th>
+                <th>إجمالي القيمة</th>
+              </tr>
+            </thead>
+            <tbody id="stockBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="result-meta"><span>نتائج البحث: <strong id="visibleCount">0</strong> صنف</span><span id="activeStoreLabel">النطاق: جميع المخازن</span></div>
-  <div class="table-wrap"><table id="outputTable">
-    <thead><tr>
-      <th>#</th><th><button data-sort="code">كود الصنف ↕</button></th><th><button data-sort="name">اسم الصنف ↕</button></th><th>الوحدة</th><th><button data-sort="transactions">عدد الحركات ↕</button></th><th><button data-sort="totalQty">إجمالي الكمية ↕</button></th><th><button data-sort="weightedAvg">متوسط السعر الموزون ↕</button></th><th><button data-sort="totalCost">إجمالي التكلفة ↕</button></th>
-    </tr></thead><tbody id="tableBody"></tbody>
-  </table></div>
-</section>
-<footer class="footer">جميع الحقوق محفوظة © 2026 — فكرة وتطوير <b>إيهاب إينال | E2 Group</b></footer>
-</div>
-<div class="toast" id="toast"></div>
 
-<script>
-'use strict';
-let lastWorkbookData=null, processedData=[], currentFilteredData=[], sortState={key:'totalCost',direction:'desc'}, currentFileName='';
-const $=id=>document.getElementById(id);
-const mappingIds=['colCode','colName','colUnit','colToStore','colQty','colTotal'];
-const nf=new Intl.NumberFormat('en-US',{maximumFractionDigits:3});
-const moneyFmt=new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2800)}
-function setLoading(on,message='جارٍ معالجة البيانات...'){$('loading').style.display=on?'flex':'none';$('loadingText').textContent=message}
-function cleanText(v){return String(v??'').replace(/\u00a0/g,' ').trim()}
-function cleanNumber(v){
- if(typeof v==='number')return Number.isFinite(v)?v:0;
- if(v===null||v===undefined||v==='')return 0;
- let s=String(v).trim().replace(/[٬،]/g,',').replace(/[٫]/g,'.').replace(/,/g,'').replace(/[^\d.+-]/g,'');
- const n=Number(s);return Number.isFinite(n)?n:0;
-}
-function isValidItemCode(code){
- const s=cleanText(code);if(!s)return false;
- const low=s.toLowerCase();
- if(/^(total|subtotal|grand total|item no|item code|code|كود|إجمالي|اجمالي|مجموع)/i.test(low))return false;
- if(!/[a-zA-Z0-9\u0600-\u06FF]/.test(s))return false;
- return s.length<=80;
-}
-function getColumn(id){return Number.parseInt($(id).value,10)}
-function handleFile(file){
- if(!file)return;
- const ext=file.name.split('.').pop().toLowerCase();
- if(!['xlsx','xls','csv'].includes(ext)){toast('صيغة الملف غير مدعومة');return}
- if(typeof XLSX==='undefined'){toast('تعذر تحميل مكتبة قراءة Excel. تحقق من الاتصال بالإنترنت.');return}
- currentFileName=file.name;setLoading(true,'جارٍ قراءة الملف...');
- const reader=new FileReader();
- reader.onerror=()=>{setLoading(false);toast('تعذر قراءة الملف')};
- reader.onload=e=>{
-  try{
-   const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:false});
-   if(!wb.SheetNames.length)throw new Error('الملف لا يحتوي على أوراق عمل');
-   const ws=wb.Sheets[wb.SheetNames[0]];
-   lastWorkbookData=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
-   if(!lastWorkbookData.length)throw new Error('الملف فارغ');
-   $('fileStatus').textContent='تم تحميل: '+file.name+' — '+lastWorkbookData.length.toLocaleString('en-US')+' صف';
-   $('fileStatus').style.color='var(--green)';
-   populateStores();recalculate();
-   toast('تم استيراد الملف بنجاح');
-  }catch(err){console.error(err);toast(err.message||'حدث خطأ أثناء قراءة الملف')}
-  finally{setLoading(false)}
- };
- reader.readAsArrayBuffer(file);
-}
-function populateStores(){
- const cCode=getColumn('colCode'),cStore=getColumn('colToStore'),stores=new Set();
- if(cStore>=0)lastWorkbookData.forEach(row=>{const code=cleanText(row[cCode]),store=cleanText(row[cStore]);if(isValidItemCode(code)&&store)stores.add(store)});
- const select=$('storeFilter'),old=select.value;
- select.innerHTML='';
- const all=document.createElement('option');all.value='ALL';all.textContent=`كل المخازن المستلمة (${stores.size})`;select.appendChild(all);
- [...stores].sort((a,b)=>a.localeCompare(b,'ar')).forEach(st=>{const o=document.createElement('option');o.value=st;o.textContent=st;select.appendChild(o)});
- if([...select.options].some(o=>o.value===old))select.value=old;
-}
-function recalculate(){
- if(!lastWorkbookData)return;
- const cCode=getColumn('colCode'),cName=getColumn('colName'),cUnit=getColumn('colUnit'),cStore=getColumn('colToStore'),cQty=getColumn('colQty'),cTotal=getColumn('colTotal'),selected=$('storeFilter').value;
- const map=new Map();let valid=0,grandQty=0,grandCost=0;
- lastWorkbookData.forEach(row=>{
-  const code=cleanText(row[cCode]),name=cleanText(row[cName]),unit=cleanText(row[cUnit])||'-',store=cStore>=0?cleanText(row[cStore]):'';
-  if(!isValidItemCode(code)||!name)return;
-  if(selected!=='ALL'&&store!==selected)return;
-  const qty=cleanNumber(row[cQty]),total=cleanNumber(row[cTotal]);
-  valid++;grandQty+=qty;grandCost+=total;
-  if(!map.has(code))map.set(code,{code,name,unit,transactions:0,totalQty:0,totalCost:0});
-  const item=map.get(code);item.transactions++;item.totalQty+=qty;item.totalCost+=total;
-  if((!item.name||item.name.length<name.length)&&name)item.name=name;
-  if(unit!=='-')item.unit=unit;
- });
- processedData=[...map.values()].map(item=>({...item,weightedAvg:item.totalQty!==0?item.totalCost/item.totalQty:0}));
- $('rawRowsCount').textContent=valid.toLocaleString('en-US');
- $('uniqueItemsCount').textContent=processedData.length.toLocaleString('en-US');
- $('totalQtySum').textContent=nf.format(grandQty);
- $('grandTotalCost').textContent=moneyFmt.format(grandCost);
- $('statsSection').style.display='grid';$('resultsCard').style.display='block';
- applyFilters();
-}
-function applyFilters(){
- const q=$('searchInput').value.trim().toLocaleLowerCase();
- const hide=$('hideZeroQty').checked;
- currentFilteredData=processedData.filter(item=>{
-  const text=(item.code+' '+item.name).toLocaleLowerCase();
-  return (!q||text.includes(q))&&(!hide||(item.totalQty!==0||item.totalCost!==0));
- });
- const key=sortState.key,dir=sortState.direction==='asc'?1:-1;
- currentFilteredData.sort((a,b)=>{const av=a[key],bv=b[key];if(typeof av==='number'&&typeof bv==='number')return (av-bv)*dir;return String(av).localeCompare(String(bv),'en',{numeric:true,sensitivity:'base'})*dir});
- renderTable();
- $('clearSearch').style.display=q?'block':'none';
- $('visibleCount').textContent=currentFilteredData.length.toLocaleString('en-US');
- const store=$('storeFilter').value;
- $('activeStoreLabel').textContent='النطاق: '+(store==='ALL'?'جميع المخازن':store);
-}
-function addCell(row,value,className){
- const td=document.createElement('td');if(className)td.className=className;td.textContent=value;row.appendChild(td);return td;
-}
-function renderTable(){
- const tbody=$('tableBody');tbody.replaceChildren();
- if(!currentFilteredData.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=8;td.className='empty-state';td.textContent=processedData.length?'لا توجد نتائج مطابقة للبحث أو عوامل التصفية.':'لا توجد بيانات صالحة للعرض.';tr.appendChild(td);tbody.appendChild(tr);return}
- currentFilteredData.forEach((item,index)=>{
-  const tr=document.createElement('tr');
-  addCell(tr,String(index+1));
-  const code=addCell(tr,item.code);const cp=document.createElement('span');cp.className='code-pill';cp.textContent=item.code;code.replaceChildren(cp);
-  const name=addCell(tr,item.name);name.style.fontWeight='800';
-  const unit=addCell(tr,'');const up=document.createElement('span');up.className='unit-pill';up.textContent=item.unit;unit.appendChild(up);
-  addCell(tr,item.transactions.toLocaleString('en-US'),'num');
-  addCell(tr,nf.format(item.totalQty),'num');
-  const avg=addCell(tr,'');const ap=document.createElement('span');ap.className='avg-pill';ap.textContent=moneyFmt.format(item.weightedAvg);avg.appendChild(ap);
-  addCell(tr,moneyFmt.format(item.totalCost),'num');
-  tbody.appendChild(tr);
- });
-}
-async function exportToExcel(){
- // تصدير نتائج العرض الفعلية فقط؛ حتى لو كانت صفر نتائج فلن يتم تصدير بيانات غير مطابقة.
- const data=currentFilteredData.slice();
- if(!data.length){toast('لا توجد نتائج لتصديرها');return}
- if(typeof ExcelJS==='undefined'){toast('تعذر تحميل مكتبة Excel. تحقق من الاتصال بالإنترنت.');return}
- const btn=$('exportBtn');btn.disabled=true;setLoading(true,'جارٍ إنشاء ملف Excel المنسق...');
- try{
-  const selected=$('storeFilter').value,storeTitle=selected==='ALL'?'جميع المخازن المستلمة':selected;
-  const date=new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
-  const wb=new ExcelJS.Workbook();wb.creator='Ehab Einal - E2 Group';wb.created=new Date();
-  const ws=wb.addWorksheet('ملخص التحويلات',{views:[{rightToLeft:true,state:'frozen',ySplit:5}]});
-  ws.mergeCells('A1:H1');const title=ws.getCell('A1');title.value='تقرير تحليل وتكلفة تحويلات المخازن المجمع';title.font={name:'Cairo',size:16,bold:true,color:{argb:'FFFFFFFF'}};title.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0B1729'}};title.alignment={vertical:'middle',horizontal:'center'};ws.getRow(1).height=36;
-  ws.mergeCells('A2:H2');const sub=ws.getCell('A2');sub.value=`النطاق: ${storeTitle} | تاريخ الاستخراج: ${date} | إعداد: إيهاب إينال (E2 Group)`;sub.font={name:'Cairo',size:11,bold:true,color:{argb:'FF155B99'}};sub.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFE8F3FF'}};sub.alignment={vertical:'middle',horizontal:'center'};ws.getRow(2).height=27;
-  ws.mergeCells('A3:D3');ws.getCell('A3').value=`الأصناف الظاهرة: ${data.length} صنف`;ws.mergeCells('E3:H3');ws.getCell('E3').value=`إجمالي الحركات: ${data.reduce((s,x)=>s+x.transactions,0)} حركة`;
-  ['A3','E3'].forEach(a=>{const c=ws.getCell(a);c.font={name:'Cairo',size:10,bold:true,color:{argb:'FF334155'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF4F8FC'}};c.alignment={vertical:'middle',horizontal:'center'}});ws.getRow(3).height=23;ws.getRow(4).height=9;
-  const headers=['م','كود الصنف','اسم الصنف','الوحدة','عدد الحركات','إجمالي الكمية','متوسط السعر الموزون','إجمالي التكلفة'];
-  const hr=ws.getRow(5);hr.values=headers;hr.height=31;hr.eachCell(c=>{c.font={name:'Cairo',size:11,bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF173B60'}};c.alignment={vertical:'middle',horizontal:'center',wrapText:true};c.border={bottom:{style:'medium',color:{argb:'FF0B1729'}}}});
-  ws.autoFilter='A5:H5';
-  const start=6;
-  data.forEach((it,i)=>{
-   const r=ws.addRow([i+1,it.code,it.name,it.unit,it.transactions,Number(it.totalQty.toFixed(4)),Number(it.weightedAvg.toFixed(4)),Number(it.totalCost.toFixed(2))]);r.height=24;
-   r.eachCell((c,col)=>{c.font={name:'Cairo',size:10,color:{argb:'FF172338'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:i%2?'FFF5F8FC':'FFFFFFFF'}};c.border={bottom:{style:'thin',color:{argb:'FFE1E8F0'}}};c.alignment={vertical:'middle',horizontal:col===3?'right':'center'};if([6,7].includes(col))c.numFmt='#,##0.000';if(col===8)c.numFmt='#,##0.00';if(col===7){c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFE6F8F1'}};c.font={name:'Cairo',size:10,bold:true,color:{argb:'FF087653'}}}});
-  });
-  const end=start+data.length-1;const total=ws.addRow(['','الإجمالي الكلي','','',{formula:`SUM(E${start}:E${end})`},{formula:`SUM(F${start}:F${end})`},'',{formula:`SUM(H${start}:H${end})`}]);ws.mergeCells(`B${total.number}:D${total.number}`);total.height=29;total.eachCell(c=>{c.font={name:'Cairo',size:11,bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF087653'}};c.alignment={vertical:'middle',horizontal:'center'}});total.getCell(6).numFmt='#,##0.000';total.getCell(8).numFmt='#,##0.00';
-  const foot=ws.addRow([]);ws.mergeCells(`A${foot.number}:H${foot.number}`);ws.getCell(`A${foot.number}`).value='جميع الحقوق محفوظة © 2026 — E2 Cost Control System | إيهاب إينال';ws.getCell(`A${foot.number}`).font={name:'Cairo',size:9,italic:true,color:{argb:'FF718096'}};ws.getCell(`A${foot.number}`).alignment={horizontal:'center',vertical:'middle'};foot.height=24;
-  ws.columns=[{width:7},{width:17},{width:39},{width:14},{width:15},{width:18},{width:23},{width:20}];
-  ws.pageSetup={paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0};
-  const buffer=await wb.xlsx.writeBuffer(),blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=`E2_Store_Transfers_${new Date().toISOString().slice(0,10)}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('تم تصدير التقرير بنجاح');
- }catch(err){console.error(err);toast('حدث خطأ أثناء التصدير: '+(err.message||''))}
- finally{btn.disabled=false;setLoading(false)}
-}
-function resetAll(){
- lastWorkbookData=null;processedData=[];currentFilteredData=[];currentFileName='';
- $('fileInput').value='';$('fileStatus').textContent='لم يتم اختيار ملف بعد';$('fileStatus').style.color='var(--muted)';
- $('statsSection').style.display='none';$('resultsCard').style.display='none';$('searchInput').value='';$('hideZeroQty').checked=false;$('storeFilter').innerHTML='<option value="ALL">كل المخازن المستلمة</option>';
- toast('تمت إعادة ضبط النظام');
-}
-$('dropZone').addEventListener('click',()=>$('fileInput').click());
-$('dropZone').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('fileInput').click()}});
-$('fileInput').addEventListener('change',e=>handleFile(e.target.files[0]));
-$('dropZone').addEventListener('dragover',e=>{e.preventDefault();$('dropZone').classList.add('dragover')});
-$('dropZone').addEventListener('dragleave',()=>$('dropZone').classList.remove('dragover'));
-$('dropZone').addEventListener('drop',e=>{e.preventDefault();$('dropZone').classList.remove('dragover');handleFile(e.dataTransfer.files[0])});
-mappingIds.forEach(id=>$(id).addEventListener('change',()=>{if(lastWorkbookData){populateStores();recalculate()}}));
-$('storeFilter').addEventListener('change',recalculate);
-$('searchInput').addEventListener('input',applyFilters);
-$('clearSearch').addEventListener('click',()=>{$('searchInput').value='';applyFilters();$('searchInput').focus()});
-$('hideZeroQty').addEventListener('change',applyFilters);
-$('exportBtn').addEventListener('click',exportToExcel);
-$('resetBtn').addEventListener('click',resetAll);
-document.querySelectorAll('[data-sort]').forEach(btn=>btn.addEventListener('click',()=>{const key=btn.dataset.sort;sortState={key,direction:sortState.key===key&&sortState.direction==='desc'?'asc':'desc'};applyFilters()}));
-function applyTheme(mode){document.body.classList.toggle('dark',mode==='dark');$('themeToggle').textContent=mode==='dark'?'☀️ الوضع الفاتح':'🌙 الوضع الداكن';localStorage.setItem('e2-theme',mode)}
-const savedTheme=localStorage.getItem('e2-theme');applyTheme(savedTheme==='dark'?'dark':'light');
-$('themeToggle').addEventListener('click',()=>applyTheme(document.body.classList.contains('dark')?'light':'dark'));
-</script>
+  <script>
+    // ---------------- Tab Switching ----------------
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    const COL_LETTERS = ["A","B","C","D","E","F","G","H","I","J","K","L"];
+
+    function parseNum(v) {
+      if (v === null || v === undefined || v === "") return 0;
+      if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+      const n = parseFloat(String(v).replace(/,/g, "").trim());
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function fmtQty(n) {
+      return n.toLocaleString("en-US", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    }
+
+    function fmtVal(n) {
+      return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function setupDropzone(dropId, inputId, onLoaded) {
+      const drop = document.getElementById(dropId);
+      const input = document.getElementById(inputId);
+
+      drop.addEventListener("click", () => input.click());
+      drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("dragover"); });
+      drop.addEventListener("dragleave", () => drop.classList.remove("dragover"));
+      drop.addEventListener("drop", e => {
+        e.preventDefault();
+        drop.classList.remove("dragover");
+        if (e.dataTransfer.files.length) readExcelFile(e.dataTransfer.files[0], onLoaded);
+      });
+      input.addEventListener("change", () => {
+        if (input.files.length) readExcelFile(input.files[0], onLoaded);
+      });
+    }
+
+    function readExcelFile(file, callback) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const wb = XLSX.read(data, { type: "array" });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+          callback(null, rows, file.name);
+        } catch (err) {
+          callback(err, null, file.name);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // =========================================================
+    // TAB 1 LOGIC: SINGLE HOTEL USAGE / TRANSFER CONSOLIDATION
+    // =========================================================
+    const usageState = {
+      rows: null,
+      consolidated: []
+    };
+
+    setupDropzone("dropUsage", "fileUsage", (err, rows, fileName) => {
+      const statusEl = document.getElementById("statusUsage");
+      if (err) {
+        statusEl.textContent = `تعذر قراءة الملف: ${err.message}`;
+        statusEl.classList.remove("loaded");
+        return;
+      }
+      usageState.rows = rows;
+
+      if (rows[0] && String(rows[0][0] || "").trim()) {
+        document.getElementById("usageHotel").value = String(rows[0][0]).trim();
+      }
+      if (rows[3] && String(rows[3][0] || "").includes("Store Usage")) {
+        const d1 = String(rows[3][1] || "").trim();
+        const d2 = String(rows[3][3] || "").trim();
+        if (d1 && d2) document.getElementById("usagePeriod").value = `${d1} إلى ${d2}`;
+      }
+
+      statusEl.textContent = `تم التحميل: ${fileName} (${rows.length} صف)`;
+      statusEl.classList.add("loaded");
+      document.getElementById("btnProcessUsage").disabled = false;
+    });
+
+    function processSingleHotelUsage() {
+      const rows = usageState.rows;
+      if (!rows || !rows.length) return;
+
+      const statusMode = document.getElementById("usageStatus").value;
+      const typeMode = document.getElementById("usageType").value;
+
+      const map = new Map();
+      let currentGroup = "-";
+      let currentItem = null;
+      let totalTx = 0, usageTx = 0, transferTx = 0;
+      let sumQty = 0, sumVal = 0;
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (!Array.isArray(row) || !row.length) continue;
+
+        const c0 = String(row[0] ?? "").trim();
+        const c1 = String(row[1] ?? "").trim();
+        const c2 = String(row[2] ?? "").trim();
+
+        if (i <= 4 || c0 === "Item Number" || c0 === "Store Usage/Transfer") continue;
+
+        if (c0.toLowerCase() === "total") {
+          currentItem = null;
+          continue;
+        }
+
+        if (c0 && !c1 && !c2) {
+          currentGroup = c0;
+          currentItem = null;
+          continue;
+        }
+
+        if (/^\d+$/.test(c0) && c1) {
+          if (!map.has(c0)) {
+            map.set(c0, {
+              code: c0,
+              name: c1,
+              group: currentGroup || "-",
+              txCount: 0,
+              usageQty: 0,
+              transferQty: 0,
+              qty: 0,
+              val: 0
+            });
+          }
+          currentItem = map.get(c0);
+          continue;
+        }
+
+        if ((c2 === "Usage" || c2 === "Transfer") && currentItem) {
+          const st = String(row[10] ?? "").trim();
+          if (statusMode === "APPROVED_ONLY" && st.toLowerCase() !== "approved") continue;
+          if (typeMode !== "ALL" && c2 !== typeMode) continue;
+
+          const q = parseNum(row[6]); // Approved Qty (Col G)
+          const v = parseNum(row[8]); // Total (Col I)
+
+          currentItem.txCount += 1;
+          currentItem.qty += q;
+          currentItem.val += v;
+          if (c2 === "Usage") {
+            currentItem.usageQty += q;
+            usageTx += 1;
+          } else {
+            currentItem.transferQty += q;
+            transferTx += 1;
+          }
+          totalTx += 1;
+          sumQty += q;
+          sumVal += v;
+        }
+      }
+
+      const list = Array.from(map.values())
+        .sort((a, b) => Number(a.code) - Number(b.code))
+        .map((item, idx) => ({ no: idx + 1, ...item }));
+
+      usageState.consolidated = list;
+
+      document.getElementById("usageKpis").style.display = "grid";
+      document.getElementById("usageResultCard").style.display = "block";
+      document.getElementById("btnExportUsage").disabled = list.length === 0;
+
+      document.getElementById("uKpiItems").textContent = list.length.toLocaleString("en-US");
+      document.getElementById("uKpiHotel").textContent = `الفندق: ${document.getElementById("usageHotel").value.trim()}`;
+      document.getElementById("uKpiTx").textContent = totalTx.toLocaleString("en-US");
+      document.getElementById("uKpiTxBreakdown").textContent = `Usage: ${usageTx} | Transfer: ${transferTx}`;
+      document.getElementById("uKpiQty").textContent = fmtQty(sumQty);
+      document.getElementById("uKpiVal").textContent = fmtVal(sumVal);
+
+      renderUsageTable(list);
+    }
+
+    function renderUsageTable(list) {
+      const tbody = document.getElementById("usageBody");
+      tbody.innerHTML = "";
+
+      let sTx = 0, sUQ = 0, sTQ = 0, sQ = 0, sV = 0;
+
+      list.forEach((r, i) => {
+        sTx += r.txCount;
+        sUQ += r.usageQty;
+        sTQ += r.transferQty;
+        sQ += r.qty;
+        sV += r.val;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="center">${i + 1}</td>
+          <td class="center">${r.code}</td>
+          <td>${r.name}</td>
+          <td class="center">${r.group}</td>
+          <td class="center"><strong>${r.txCount}</strong></td>
+          <td class="num">${fmtQty(r.usageQty)}</td>
+          <td class="num">${fmtQty(r.transferQty)}</td>
+          <td class="num"><strong>${fmtQty(r.qty)}</strong></td>
+          <td class="num"><strong>${fmtVal(r.val)}</strong></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const tot = document.createElement("tr");
+      tot.className = "total-row";
+      tot.innerHTML = `
+        <td colspan="4" class="center">الإجمالي الكلي</td>
+        <td class="center">${sTx.toLocaleString("en-US")}</td>
+        <td class="num">${fmtQty(sUQ)}</td>
+        <td class="num">${fmtQty(sTQ)}</td>
+        <td class="num">${fmtQty(sQ)}</td>
+        <td class="num">${fmtVal(sV)}</td>
+      `;
+      tbody.appendChild(tot);
+    }
+
+    function exportUsageExcel() {
+      if (!usageState.consolidated.length) return;
+      const hotel = document.getElementById("usageHotel").value.trim() || "الفندق";
+      const period = document.getElementById("usagePeriod").value.trim();
+      const wb = XLSX.utils.book_new();
+
+      const cols = [
+        "م", "رقم الصنف", "اسم الصنف", "المجموعة",
+        "عدد الحركات", "كمية Usage", "كمية Transfer",
+        "إجمالي الكمية", "إجمالي القيمة"
+      ];
+
+      const aoa = [
+        [`تقرير المنصرف المجمع برقم الصنف — ${hotel} (${period})`],
+        [`إجمالي الأصناف: ${usageState.consolidated.length} صنف  |  إعداد: م/إيهاب إينال (E2 Group)`],
+        [],
+        cols
+      ];
+
+      let sTx = 0, sUQ = 0, sTQ = 0, sQ = 0, sV = 0;
+      usageState.consolidated.forEach((r, idx) => {
+        sTx += r.txCount; sUQ += r.usageQty; sTQ += r.transferQty; sQ += r.qty; sV += r.val;
+        aoa.push([
+          idx + 1,
+          Number(r.code) || r.code,
+          r.name,
+          r.group,
+          r.txCount,
+          Number(r.usageQty.toFixed(6)),
+          Number(r.transferQty.toFixed(6)),
+          Number(r.qty.toFixed(6)),
+          Number(r.val.toFixed(6))
+        ]);
+      });
+
+      aoa.push([
+        "", "", "الإجمالي الكلي", "", sTx,
+        Number(sUQ.toFixed(6)),
+        Number(sTQ.toFixed(6)),
+        Number(sQ.toFixed(6)),
+        Number(sV.toFixed(6))
+      ]);
+
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws["!cols"] = [
+        { wch: 6 }, { wch: 14 }, { wch: 40 }, { wch: 22 },
+        { wch: 13 }, { wch: 15 }, { wch: 16 }, { wch: 16 }, { wch: 19 }
+      ];
+      ws["!merges"] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 8 } },
+        { s: { r: aoa.length - 1, c: 0 }, e: { r: aoa.length - 1, c: 3 } }
+      ];
+
+      XLSX.utils.book_append_sheet(wb, ws, "المنصرف المجمع");
+      XLSX.writeFile(wb, `منصرف_مجمع_${hotel.replace(/\s+/g, "_")}.xlsx`);
+    }
+
+    document.getElementById("btnProcessUsage").addEventListener("click", processSingleHotelUsage);
+    document.getElementById("btnExportUsage").addEventListener("click", exportUsageExcel);
+    document.getElementById("usageSearch").addEventListener("input", e => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) return renderUsageTable(usageState.consolidated);
+      renderUsageTable(usageState.consolidated.filter(r =>
+        String(r.code).toLowerCase().includes(q) ||
+        String(r.name).toLowerCase().includes(q) ||
+        String(r.group).toLowerCase().includes(q)
+      ));
+    });
+
+    // =========================================================
+    // TAB 2 LOGIC: TWO-PROPERTY STOCK CONSOLIDATION (BEACH + VAC)
+    // =========================================================
+    const stockState = {
+      beachRows: null,
+      vacRows: null,
+      merged: []
+    };
+
+    function initStockSelects() {
+      const cfgDefaults = {
+        sColCode: "1",  // B: رقم الصنف
+        sColName: "2",  // C: اسم الصنف
+        sColUnit: "3",  // D: الوحدة
+        sColGroup: "4", // E: المجموعة
+        sColQty: "5",   // F: الكمية
+        sColVal: "6"    // G: القيمة الإجمالية
+      };
+
+      Object.entries(cfgDefaults).forEach(([id, defVal]) => {
+        const sel = document.getElementById(id);
+        sel.innerHTML = "";
+        COL_LETTERS.forEach((ltr, idx) => {
+          const opt = document.createElement("option");
+          opt.value = String(idx);
+          opt.textContent = `عمود ${ltr} (رقم ${idx + 1})`;
+          sel.appendChild(opt);
+        });
+        sel.value = defVal;
+      });
+    }
+
+    initStockSelects();
+
+    setupDropzone("dropStockBeach", "fileStockBeach", (err, rows, fileName) => {
+      const el = document.getElementById("statusStockBeach");
+      if (err) {
+        el.textContent = `خطأ: ${err.message}`;
+        el.classList.remove("loaded");
+        return;
+      }
+      stockState.beachRows = rows;
+      el.textContent = `تم التحميل: ${fileName} (${rows.length} صف)`;
+      el.classList.add("loaded");
+      document.getElementById("btnProcessStock").disabled = !(stockState.beachRows || stockState.vacRows);
+    });
+
+    setupDropzone("dropStockVac", "fileStockVac", (err, rows, fileName) => {
+      const el = document.getElementById("statusStockVac");
+      if (err) {
+        el.textContent = `خطأ: ${err.message}`;
+        el.classList.remove("loaded");
+        return;
+      }
+      stockState.vacRows = rows;
+      el.textContent = `تم التحميل: ${fileName} (${rows.length} صف)`;
+      el.classList.add("loaded");
+      document.getElementById("btnProcessStock").disabled = !(stockState.beachRows || stockState.vacRows);
+    });
+
+    function extractStockMap(rows, cfg) {
+      const map = new Map();
+      if (!rows || !rows.length) return map;
+
+      for (const row of rows) {
+        if (!Array.isArray(row) || !row.length) continue;
+        const code = String(row[cfg.colCode] ?? "").trim();
+        const name = String(row[cfg.colName] ?? "").trim();
+        if (!/^\d+$/.test(code) || !name) continue;
+
+        const unit = String(row[cfg.colUnit] ?? "").trim() || "-";
+        const group = String(row[cfg.colGroup] ?? "").trim() || "-";
+        const qty = parseNum(row[cfg.colQty]);
+        const val = parseNum(row[cfg.colVal]);
+
+        if (!map.has(code)) {
+          map.set(code, { code, name, unit, group, qty: 0, val: 0 });
+        }
+        const entry = map.get(code);
+        entry.qty += qty;
+        entry.val += val;
+      }
+      return map;
+    }
+
+    function processStockMerge() {
+      const cfg = {
+        colCode: parseInt(document.getElementById("sColCode").value, 10),
+        colName: parseInt(document.getElementById("sColName").value, 10),
+        colUnit: parseInt(document.getElementById("sColUnit").value, 10),
+        colGroup: parseInt(document.getElementById("sColGroup").value, 10),
+        colQty: parseInt(document.getElementById("sColQty").value, 10),
+        colVal: parseInt(document.getElementById("sColVal").value, 10)
+      };
+
+      const bMap = extractStockMap(stockState.beachRows, cfg);
+      const vMap = extractStockMap(stockState.vacRows, cfg);
+
+      const codes = Array.from(new Set([...bMap.keys(), ...vMap.keys()])).sort((a, b) => Number(a) - Number(b));
+      const merged = [];
+      let sBQ = 0, sBV = 0, sVQ = 0, sVV = 0;
+
+      codes.forEach((code, idx) => {
+        const b = bMap.get(code);
+        const v = vMap.get(code);
+
+        const name = (b && b.name) || (v && v.name) || "";
+        const unit = (b && b.unit) || (v && v.unit) || "-";
+        const group = (b && b.group && b.group !== "-") ? b.group : ((v && v.group) || "-");
+
+        const bQty = b ? b.qty : 0;
+        const bVal = b ? b.val : 0;
+        const vQty = v ? v.qty : 0;
+        const vVal = v ? v.val : 0;
+
+        sBQ += bQty; sBV += bVal;
+        sVQ += vQty; sVV += vVal;
+
+        merged.push({
+          no: idx + 1,
+          code, name, unit, group,
+          bQty, bVal, vQty, vVal,
+          totQty: bQty + vQty,
+          totVal: bVal + vVal
+        });
+      });
+
+      stockState.merged = merged;
+
+      document.getElementById("stockKpis").style.display = "grid";
+      document.getElementById("stockResultCard").style.display = "block";
+      document.getElementById("btnExportStock").disabled = merged.length === 0;
+
+      document.getElementById("sKpiItems").textContent = merged.length.toLocaleString("en-US");
+      document.getElementById("sKpiItemsSub").textContent = `بيتش: ${bMap.size} صنف | فاكيشن: ${vMap.size} صنف`;
+      document.getElementById("sKpiBeachVal").textContent = fmtVal(sBV);
+      document.getElementById("sKpiBeachQty").textContent = `الكمية: ${fmtQty(sBQ)}`;
+      document.getElementById("sKpiVacVal").textContent = fmtVal(sVV);
+      document.getElementById("sKpiVacQty").textContent = `الكمية: ${fmtQty(sVQ)}`;
+      document.getElementById("sKpiTotalVal").textContent = fmtVal(sBV + sVV);
+      document.getElementById("sKpiTotalQty").textContent = `إجمالي الكمية: ${fmtQty(sBQ + sVQ)}`;
+
+      renderStockTable(merged);
+    }
+
+    function renderStockTable(rows) {
+      const tbody = document.getElementById("stockBody");
+      tbody.innerHTML = "";
+
+      let sBQ = 0, sBV = 0, sVQ = 0, sVV = 0, sTQ = 0, sTV = 0;
+
+      rows.forEach((r, i) => {
+        sBQ += r.bQty; sBV += r.bVal;
+        sVQ += r.vQty; sVV += r.vVal;
+        sTQ += r.totQty; sTV += r.totVal;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="center">${i + 1}</td>
+          <td class="center">${r.code}</td>
+          <td>${r.name}</td>
+          <td class="center">${r.unit}</td>
+          <td class="center">${r.group}</td>
+          <td class="num">${fmtQty(r.bQty)}</td>
+          <td class="num">${fmtVal(r.bVal)}</td>
+          <td class="num">${fmtQty(r.vQty)}</td>
+          <td class="num">${fmtVal(r.vVal)}</td>
+          <td class="num"><strong>${fmtQty(r.totQty)}</strong></td>
+          <td class="num"><strong>${fmtVal(r.totVal)}</strong></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const tot = document.createElement("tr");
+      tot.className = "total-row";
+      tot.innerHTML = `
+        <td colspan="5" class="center">الإجمالي المجمع للقريتين</td>
+        <td class="num">${fmtQty(sBQ)}</td>
+        <td class="num">${fmtVal(sBV)}</td>
+        <td class="num">${fmtQty(sVQ)}</td>
+        <td class="num">${fmtVal(sVV)}</td>
+        <td class="num">${fmtQty(sTQ)}</td>
+        <td class="num">${fmtVal(sTV)}</td>
+      `;
+      tbody.appendChild(tot);
+    }
+
+    function exportStockExcel() {
+      if (!stockState.merged.length) return;
+      const dateStr = document.getElementById("stockDate").value.trim() || "21 نوفمبر 2026";
+      const wb = XLSX.utils.book_new();
+
+      const cols = [
+        "م", "رقم الصنف", "اسم الصنف", "الوحدة", "المجموعة",
+        "كمية بيتش", "قيمة بيتش",
+        "كمية فاكيشن", "قيمة فاكيشن",
+        "إجمالي الكمية", "إجمالي القيمة"
+      ];
+
+      const aoa = [
+        [`التقرير المجمع لأرصدة المخازن — دريمز بيتش & دريمز فاكيشن (${dateStr})`],
+        [`إجمالي الأصناف المجمعة: ${stockState.merged.length} صنف  |  إعداد: م/إيهاب إينال (E2 Group)`],
+        [],
+        cols
+      ];
+
+      let sBQ = 0, sBV = 0, sVQ = 0, sVV = 0, sTQ = 0, sTV = 0;
+      stockState.merged.forEach((r, idx) => {
+        sBQ += r.bQty; sBV += r.bVal;
+        sVQ += r.vQty; sVV += r.vVal;
+        sTQ += r.totQty; sTV += r.totVal;
+
+        aoa.push([
+          idx + 1,
+          Number(r.code) || r.code,
+          r.name,
+          r.unit,
+          r.group,
+          Number(r.bQty.toFixed(6)),
+          Number(r.bVal.toFixed(6)),
+          Number(r.vQty.toFixed(6)),
+          Number(r.vVal.toFixed(6)),
+          Number(r.totQty.toFixed(6)),
+          Number(r.totVal.toFixed(6))
+        ]);
+      });
+
+      aoa.push([
+        "", "", "الإجمالي المجمع", "", "",
+        Number(sBQ.toFixed(6)),
+        Number(sBV.toFixed(6)),
+        Number(sVQ.toFixed(6)),
+        Number(sVV.toFixed(6)),
+        Number(sTQ.toFixed(6)),
+        Number(sTV.toFixed(6))
+      ]);
+
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws["!cols"] = [
+        { wch: 6 }, { wch: 14 }, { wch: 38 }, { wch: 13 }, { wch: 20 },
+        { wch: 15 }, { wch: 18 }, { wch: 15 }, { wch: 18 }, { wch: 16 }, { wch: 19 }
+      ];
+      ws["!merges"] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 10 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } },
+        { s: { r: aoa.length - 1, c: 0 }, e: { r: aoa.length - 1, c: 4 } }
+      ];
+
+      XLSX.utils.book_append_sheet(wb, ws, "رصيد القريتين المجمع");
+      XLSX.writeFile(wb, "تقرير_أرصدة_دريمز_بيتش_وفاكيشن_المجمع.xlsx");
+    }
+
+    document.getElementById("btnProcessStock").addEventListener("click", processStockMerge);
+    document.getElementById("btnExportStock").addEventListener("click", exportStockExcel);
+    document.getElementById("stockSearch").addEventListener("input", e => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) return renderStockTable(stockState.merged);
+      renderStockTable(stockState.merged.filter(r =>
+        String(r.code).toLowerCase().includes(q) ||
+        String(r.name).toLowerCase().includes(q) ||
+        String(r.group).toLowerCase().includes(q)
+      ));
+    });
+  </script>
 </body>
 </html>
